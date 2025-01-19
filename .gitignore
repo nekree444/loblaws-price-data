@@ -1,3 +1,4 @@
 my_key.json
 *.json
 __pycache__/
+*.txt

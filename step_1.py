@@ -41,6 +41,8 @@ def get_week():
 
 if __name__ == "__main__":
     print('updated succesffuly')
+    print(BUCKET_NAME)
+    print(bucket)
 
     # for store_id, store_banner in all_stores.items():
     # all_stores = stores_dict()
