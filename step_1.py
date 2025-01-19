@@ -13,7 +13,7 @@ from google.cloud import storage
 
 # Constants
 LISTINGS_NUM = 275
-BUCKET_NAME = os.getenv("BUCKET_NAME")
+BUCKET_NAME = os.environ["BUCKET_NAME"]
 # KEY_PATH = os.getenv("GCP_SA_KEY")  # Path to your Google Cloud key
 
 # Initialize Google Cloud Storage client

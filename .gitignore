@@ -1,4 +1,4 @@
 my_key.json
 *.json
 __pycache__/
-*.txt
+quick_deployment.txt
