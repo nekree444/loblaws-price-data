@@ -45,7 +45,10 @@ def get_listings_data(num_listings, page_num, store_id, store_banner):
     json_data['fulfillmentInfo']['storeId'] = store_id
     json_data['banner'] = store_banner
     # start = time.time()
-    r = requests.post(API_URL, headers=HEADERS, json=json_data)
+    try:
+        r = requests.post(API_URL, headers=HEADERS, json=json_data)
+    except:
+        return ['errors']
     # r = S.post(API_URL, headers=HEADERS, json=json_data)
     # print(f"Request took {time.time() - start:.2f} seconds")
     # print(len(r.content) // 1024, 'KB')

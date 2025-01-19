@@ -42,9 +42,9 @@ def get_week():
 if __name__ == "__main__":
     print('updated succesffuly')
     # for store_id, store_banner in all_stores.items():
-    # all_stores = stores_dict()
+    all_stores = stores_dict()
 
-    all_stores = {'1080': 'superstore'} # only do one store for testing
+    # all_stores = {'1080': 'superstore'} # only do one store for testing
 
     current_week = get_week()
 
