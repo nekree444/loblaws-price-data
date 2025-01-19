@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+env:
+  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+
 jobs:
   deploy:
     name: Deploying loblaws price data
@@ -34,5 +38,3 @@ jobs:
           --source . \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }}
-      env:
-        BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
