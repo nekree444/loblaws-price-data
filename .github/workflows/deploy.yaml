@@ -5,9 +5,9 @@ on:
     branches:
       - main
 
-env:
-  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
-  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+# env:
+#   BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+#   GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
 
 jobs:
   deploy:
