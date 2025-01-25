@@ -93,21 +93,24 @@ def search_runner(all_stores, current_week):
                     else:
                         break
                 if get_product_grid_search(data):  # if there are products on the page
-                    product_tiles = data['layout']['sections']['mainContentCollection']['components'][0]['data']['productTiles']
-                    product_tiles.extend(data['layout']['sections']['mainContentCollection']['components'][2]['data']['productTiles'])
-                    for j in product_tiles:
-                        if j['productId'] in holder:  # checks for duplicates
-                            continue
-                        if j['pricing']['wasPrice'] is None:  # deal pricing
-                            price = j['pricing']['price']
-                            dealPrice = None
-                        else:
-                            price = j['pricing']['wasPrice']
-                            dealPrice = j['pricing']['price']
+                    if len(data['layout']['sections']['mainContentCollection']['components']) == 4:  # if there are 2 sections of products
+                        product_tiles = data['layout']['sections']['mainContentCollection']['components'][0]['data']['productTiles']
+                        product_tiles.extend(data['layout']['sections']['mainContentCollection']['components'][2]['data']['productTiles'])
+                        for j in product_tiles:
+                            if j['productId'] in holder:  # checks for duplicates
+                                continue
+                            if j['pricing']['wasPrice'] is None:  # deal pricing
+                                price = j['pricing']['price']
+                                dealPrice = None
+                            else:
+                                price = j['pricing']['wasPrice']
+                                dealPrice = j['pricing']['price']
 
-                        holder.append(j['productId']) 
-                        writer.writerow([j['productId'], j['brand'], j['title'], price, dealPrice])  # write to memory
-                    # print('wrote', i, 'holder length is', len(holder))
+                            holder.append(j['productId']) 
+                            writer.writerow([j['productId'], j['brand'], j['title'], price, dealPrice])  # write to memory
+                        # print('wrote', i, 'holder length is', len(holder))
+                    else:  # if there is only 1 section of products
+                        break
                 else:  # if the data is invalid
                     # print('continuing...', str(data)[0:30])
                     continues += 1
@@ -131,6 +134,7 @@ if __name__ == "__main__":
     
     all_stores = stores_dict()
 
+    # all_stores = {'6720': 'wholesaleclub'} # only do one store for testing
     # all_stores = {'1080': 'superstore'} # only do one store for testing
 
     current_week = get_week()
