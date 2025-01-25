@@ -7,7 +7,7 @@ We will do all stores in Ontario
 
 from loblaws_tools import get_all_stores, get_product_grid, get_listings_data, stores_dict, get_week, upload_to_bucket, get_product_grid_search, get_listings_data_search
 import time, csv, io, os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from google.cloud import storage
 
 
