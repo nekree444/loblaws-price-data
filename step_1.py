@@ -95,8 +95,6 @@ def search_runner(all_stores, current_week):
                 if get_product_grid_search(data):  # if there are products on the page
                     product_tiles = data['layout']['sections']['mainContentCollection']['components'][0]['data']['productTiles']
                     product_tiles.extend(data['layout']['sections']['mainContentCollection']['components'][2]['data']['productTiles'])
-                    # data['layout']['sections']['mainContentCollection']['components'][0]['data']['productTiles'].append(data['layout']['sections']['mainContentCollection']['components'][2]['data']['productTiles'])
-                    print(len(product_tiles))
                     for j in product_tiles:
                         if j['productId'] in holder:  # checks for duplicates
                             continue
@@ -109,9 +107,9 @@ def search_runner(all_stores, current_week):
 
                         holder.append(j['productId']) 
                         writer.writerow([j['productId'], j['brand'], j['title'], price, dealPrice])  # write to memory
-                    print('wrote', i, 'holder length is', len(holder))
+                    # print('wrote', i, 'holder length is', len(holder))
                 else:  # if the data is invalid
-                    print('continuing...', str(data)[0:30])
+                    # print('continuing...', str(data)[0:30])
                     continues += 1
                     if continues > 5:  # at 5 continues
                         break  # break if we've reached the max page
