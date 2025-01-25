@@ -2,3 +2,6 @@ my_key.json
 *.json
 __pycache__/
 quick_deployment.txt
+.env
+storage_size.py
+tools/
