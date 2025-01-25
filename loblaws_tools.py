@@ -184,9 +184,12 @@ def get_listings_data_search(num_listings, page_num, store_id, store_banner):
 
 def upload_to_bucket(blob_name, file_data, bucket):
     """Uploads a string data as a file to the Google Cloud Storage bucket."""
-    blob = bucket.blob(blob_name)
-    blob.upload_from_string(file_data.getvalue(), content_type='text/csv')
-    print(f"Uploaded {blob_name}")
+    try:
+        blob = bucket.blob(blob_name)
+        blob.upload_from_string(file_data.getvalue(), content_type='text/csv')
+        print(f"Uploaded {blob_name}")
+    except:
+        print(f"Error uploading {blob_name}")
 
 def stores_dict():
     temp = get_all_stores()
