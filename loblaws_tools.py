@@ -202,3 +202,8 @@ def get_week():
     offset = (today.weekday() - 3) % 7  # 3 corresponds to Thursday
     last_thursday = today - datetime.timedelta(days=offset)
     return [last_thursday.year, last_thursday.month, last_thursday.day]
+
+def get_all_files(client, bucket_name, current_week):
+    blobs = client.list_blobs(bucket_name)
+    temp = [i.name.split('/')[-1].split('_')[1] for i in blobs if f"listings_{current_week[0]}_{current_week[1]}_{current_week[2]}" in i.name]
+    return temp

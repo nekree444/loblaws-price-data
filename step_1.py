@@ -5,7 +5,7 @@ We will do all stores in Ontario
 'nofrills', 'valumart', 'independent', 'loblaw', 'wholesaleclub', 'rapid', 'zehrs', 'fortinos', 'independentcitymarket', 'extrafoods', 'superstore', 'provigo'
 """
 
-from loblaws_tools import get_all_stores, get_product_grid, get_listings_data, stores_dict, get_week, upload_to_bucket, get_product_grid_search, get_listings_data_search
+from loblaws_tools import get_all_stores, get_product_grid, get_listings_data, stores_dict, get_week, upload_to_bucket, get_product_grid_search, get_listings_data_search, get_all_files
 import time, csv, io, os
 # from dotenv import load_dotenv
 from google.cloud import storage
@@ -132,12 +132,16 @@ def ios_search_runner():
 if __name__ == "__main__":
     print('updated succesffuly')
     
-    all_stores = stores_dict()
+    current_week = get_week()
 
     # all_stores = {'6720': 'wholesaleclub'} # only do one store for testing
     # all_stores = {'1080': 'superstore'} # only do one store for testing
+    all_stores = stores_dict()
 
-    current_week = get_week()
+    done_stores = get_all_files(client, BUCKET_NAME, current_week)
+
+    all_stores = {k: v for k, v in all_stores.items() if k not in done_stores}
+    print(all_stores)
 
     # listings_runner(all_stores, current_week)
 
