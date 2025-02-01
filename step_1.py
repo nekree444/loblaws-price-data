@@ -59,14 +59,13 @@ def listings_runner(all_stores, current_week):
                         writer.writerow([j['productId'], j['brand'], j['title'], price, dealPrice])  # write to memory
                     # print('wrote', i, 'holder length is', len(holder))
                 else:  # if the data is invalid
-                    # print('continuing...', str(data)[0:30])
                     continues += 1
                     if continues > 5:  # at 5 continues
                         break  # break if we've reached the max page
                     continue  # otherwise, continue
 
         # Upload the CSV data to the Google Cloud Storage bucket
-        blob_name = f"listings_{current_week[0]}_{current_week[1]}_{current_week[2]}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{current_week[1]}_{current_week[2]}.csv"
+        blob_name = f"listings_{current_week[0]}_{f"{current_week[1]:02d}"}_{f"{current_week[2]:02d}"}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{f"{current_week[1]:02d}"}_{f"{current_week[2]:02d}"}.csv"
         upload_to_bucket(blob_name, csv_data, bucket)
         print(f"Time taken for store {store_id} is {time.time() - start} seconds")
 
@@ -112,14 +111,13 @@ def search_runner(all_stores, current_week):
                     else:  # if there is only 1 section of products
                         break
                 else:  # if the data is invalid
-                    # print('continuing...', str(data)[0:30])
                     continues += 1
                     if continues > 5:  # at 5 continues
                         break  # break if we've reached the max page
                     continue  # otherwise, continue
 
         # Upload the CSV data to the Google Cloud Storage bucket
-        blob_name = f"listings_{current_week[0]}_{current_week[1]}_{current_week[2]}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{current_week[1]}_{current_week[2]}.csv"
+        blob_name = f"listings_{current_week[0]}_{f"{current_week[1]:02d}"}_{f"{current_week[2]:02d}"}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{f"{current_week[1]:02d}"}_{f"{current_week[2]:02d}"}.csv"
         upload_to_bucket(blob_name, csv_data, bucket)
         print(f"Time taken for store {store_id} is {time.time() - start} seconds")
 
