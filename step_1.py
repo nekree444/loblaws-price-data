@@ -7,7 +7,6 @@ We will do all stores in Ontario
 
 from loblaws_tools import get_all_stores, get_product_grid, get_listings_data, stores_dict, get_week, upload_to_bucket, get_product_grid_search, get_listings_data_search, get_all_files
 import time, csv, io, os
-# from dotenv import load_dotenv
 from google.cloud import storage
 
 
@@ -16,6 +15,7 @@ LISTINGS_NUM = 275
 BUCKET_NAME = "price-data-storage"
 
 # Initialize Google Cloud Storage client
+# from dotenv import load_dotenv
 # load_dotenv()
 # KEY_PATH = os.getenv("KEY_PATH")  # Path to your Google Cloud key
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = KEY_PATH
@@ -65,7 +65,7 @@ def listings_runner(all_stores, current_week):
                     continue  # otherwise, continue
 
         # Upload the CSV data to the Google Cloud Storage bucket
-        blob_name = f"listings_{current_week[0]}_{f"{current_week[1]:02d}"}_{f"{current_week[2]:02d}"}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{f"{current_week[1]:02d}"}_{f"{current_week[2]:02d}"}.csv"
+        blob_name = f"listings_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}.csv"
         upload_to_bucket(blob_name, csv_data, bucket)
         print(f"Time taken for store {store_id} is {time.time() - start} seconds")
 
@@ -117,7 +117,7 @@ def search_runner(all_stores, current_week):
                     continue  # otherwise, continue
 
         # Upload the CSV data to the Google Cloud Storage bucket
-        blob_name = f"listings_{current_week[0]}_{f"{current_week[1]:02d}"}_{f"{current_week[2]:02d}"}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{f"{current_week[1]:02d}"}_{f"{current_week[2]:02d}"}.csv"
+        blob_name = f"listings_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}.csv"
         upload_to_bucket(blob_name, csv_data, bucket)
         print(f"Time taken for store {store_id} is {time.time() - start} seconds")
 
@@ -140,6 +140,8 @@ if __name__ == "__main__":
 
     all_stores = {k: v for k, v in all_stores.items() if k not in done_stores}
     print(all_stores)
+    print(len(done_stores), 'stores done')
+    print(len(all_stores.keys()), 'stores left')
 
     # listings_runner(all_stores, current_week)
 

@@ -205,5 +205,5 @@ def get_week():
 
 def get_all_files(client, bucket_name, current_week):
     blobs = client.list_blobs(bucket_name)
-    temp = [i.name.split('/')[-1].split('_')[1] for i in blobs if f"listings_{current_week[0]}_{current_week[1]}_{current_week[2]}" in i.name]
+    temp = [i.name.split('/')[-1].split('_')[1] for i in blobs if f"listings_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}" in i.name]
     return temp
