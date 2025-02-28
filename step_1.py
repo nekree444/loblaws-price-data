@@ -38,12 +38,15 @@ def initialize_storage_client():
 
 client, bucket = initialize_storage_client()
 
-def process_product_data(product, holder):
+def process_product_data(product, holder, store_banner, store_id, current_week):
     """Process individual product data and return row if product is not a duplicate."""
     if product['productId'] in holder:
         return None
         
     # Determine pricing (regular vs deal price)
+    package_size = None
+    if 'packageSizing' in product:
+        package_size = product['packageSizing']
     if product['pricing']['wasPrice'] is None:
         price = product['pricing']['price']
         deal_price = None
@@ -53,7 +56,7 @@ def process_product_data(product, holder):
     
     holder.append(product['productId'])
     # print('skipped')
-    return [product['productId'], product['brand'], product['title'], price, deal_price]
+    return [product['productId'], product['brand'], product['title'], price, deal_price, store_id, store_banner, f"{current_week[0]}-{current_week[1]:02d}-{current_week[2]:02d}", package_size]
 
 def listings_runner(all_stores, current_week):
     for store_id, store_banner in all_stores.items():
@@ -62,7 +65,7 @@ def listings_runner(all_stores, current_week):
 
         csv_data = io.StringIO()
         writer = csv.writer(csv_data)
-        writer.writerow(['id', 'brand', 'name', 'price', 'dealPrice'])
+        writer.writerow(['id', 'brand', 'name', 'price', 'deal_price', 'store_id', 'banner', 'date', 'package_size'])
         holder = []  # this is for repeat product ids
         for _ in range(PASSES_PER_STORE):
             empty_page_count = 0  # tracks how many times there's an error or empty page; the fifth time we break
@@ -87,7 +90,7 @@ def listings_runner(all_stores, current_week):
                 # Process products on the page
                 products = data['layout']['sections']['productListingSection']['components'][0]['data']['productGrid']['productTiles']
                 for product in products:
-                    row = process_product_data(product, holder)
+                    row = process_product_data(product, holder, store_banner, store_id, current_week)
                     if row:
                         writer.writerow(row)
 
@@ -106,7 +109,7 @@ def search_runner(all_stores, current_week):
 
         csv_data = io.StringIO()
         writer = csv.writer(csv_data)
-        writer.writerow(['id', 'brand', 'name', 'price', 'dealPrice'])
+        writer.writerow(['id', 'brand', 'name', 'price', 'deal_price', 'store_id', 'banner', 'date', 'package_size'])
         holder = []  # this is for repeat product ids
         for pass_num in range(PASSES_PER_STORE):
             # print(str(pass_num + 1) + '/' + str(PASSES_PER_STORE), len(holder))
@@ -136,7 +139,7 @@ def search_runner(all_stores, current_week):
                     product_tiles.extend(components[2]['data']['productTiles'])
                     
                     for product in product_tiles:
-                        row = process_product_data(product, holder)
+                        row = process_product_data(product, holder, store_banner, store_id, current_week)
                         if row:
                             writer.writerow(row)
                 else:
