@@ -1,46 +1,58 @@
-""" 
-now we go through every document within every folder within listings
-we get the nutritional data as a json for each product and save the data to the nutrition data oflder
-if the product already has a json file we skip it 
-"""
-import requests, os, json, csv
+from google.cloud import storage, bigquery
+import os
+from loblaws_tools import get_week
+week = get_week()
+current_week = f"{week[0]}_{week[1]:02d}_{week[2]:02d}"
 
-# constants
-HEADERS = {
-    'x-apikey': 'C1xujSegT5j3ap3yexJjqhOfELwGKYvz',
-    'User-Agent': 'PC%20Express/202408011329 CFNetwork/1474 Darwin/23.0.0',
-}
+# Constants
+BUCKET_NAME = "price-data-storage"
+DATASET_ID = "datav1"
+TABLE_ID = "prices"
+MIN_SIZE_KB = 1
 
-s = requests.Session()
+def initialize_clients():
+    """Initialize and return Google Cloud Storage and BigQuery clients and bucket."""
+    # # # For local development with .env
+    # from dotenv import load_dotenv
+    # load_dotenv()
+    # KEY_PATH = os.getenv("KEY_PATH")
+    # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = KEY_PATH
+    
+    client = storage.Client()
+    bucket = client.bucket(BUCKET_NAME)
+    bq_client = bigquery.Client()
+    return client, bucket, bq_client
 
-params = {
-    'lang': 'en',
-    'date': '01012025',
-    'storeId': None,
-    'banner': None,
-    'pickupType': 'STORE',
-}
+client, bucket, bq_client = initialize_clients()
 
-os.makedirs('nutrition_data', exist_ok=True)
+csvs = [
+    blob for blob in bucket.list_blobs() 
+    if blob.name.endswith('.csv') 
+    and current_week in blob.name 
+    and blob.size >= MIN_SIZE_KB * 1024  # Convert KB to bytes
+]
 
-def get_nutrition_data(product_id, store_id, store_banner):
-    params['storeId'] = str(store_id)
-    params['banner'] = str(store_banner)
-    r = requests.get(f'https://api.pcexpress.ca/pcx-bff/api/v1/products/{product_id}', params=params, headers=HEADERS)
-    if 'nutritionFacts' in r.json().keys():
-        with open(f"nutrition_data/{product_id}.json", "w", encoding="utf-8") as f:
-            json.dump(r.json()['nutritionFacts'], f, ensure_ascii=False, indent=4)
-            print(f"wrote {product_id}")
+table_ref = bq_client.dataset(DATASET_ID).table(TABLE_ID)
 
-for root, dirs, files in os.walk('listings'):
-    for file in files:
-        if file.endswith('.csv'):
-            store_banner, store_id, *_ = file.split('_')
-            with open(os.path.join(root, file), newline='', encoding='utf-8') as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    product_id = row['id']
-                    if not os.path.exists(f'nutrition_data/{product_id}.json'):
-                        get_nutrition_data(product_id, store_id, store_banner)
-                    else:
-                        print(f"Skipping {product_id}, already exists.")
+job_config = bigquery.LoadJobConfig()
+job_config.source_format = bigquery.SourceFormat.CSV
+job_config.skip_leading_rows = 1  # Skip header row
+job_config.autodetect = False
+job_config.write_disposition = bigquery.WriteDisposition.WRITE_APPEND
+
+print(f"Found {len(csvs)} CSV files >= {MIN_SIZE_KB}KB")
+
+for blob in csvs:
+    uri = f"gs://{BUCKET_NAME}/{blob.name}"
+    print(f"Loading file: {blob.name} ({blob.size/1024:.1f}KB)")
+    
+    load_job = bq_client.load_table_from_uri(
+        uri,
+        table_ref,
+        job_config=job_config
+    )
+    
+    # Wait for the job to complete
+    load_job.result()
+    
+    print(f"Successfully loaded {blob.name} ({blob.size/1024:.1f}KB)")

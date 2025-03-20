@@ -193,7 +193,7 @@ def upload_to_bucket(blob_name, file_data, bucket):
 
 def stores_dict():
     temp = get_all_stores()
-    temp = [i for i in temp if i['address']['region'] == 'Ontario']
+    temp = [i for i in temp if i['address']['region'] == 'Ontario' and i['isShoppable'] == True]
     unique_stores = {i['storeId']: i['storeBannerId'] for i in temp}
     return unique_stores # in format {store_id: store_banner}
 
