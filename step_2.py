@@ -29,14 +29,14 @@ csvs = [
     blob for blob in bucket.list_blobs() 
     if blob.name.endswith('.csv') 
     and current_week in blob.name 
-    and blob.size >= MIN_SIZE_KB * 1024  # Convert KB to bytes
+    and blob.size >= MIN_SIZE_KB * 1024  # converrt kb to bytes
 ]
 
 table_ref = bq_client.dataset(DATASET_ID).table(TABLE_ID)
 
 job_config = bigquery.LoadJobConfig()
 job_config.source_format = bigquery.SourceFormat.CSV
-job_config.skip_leading_rows = 1  # Skip header row
+job_config.skip_leading_rows = 1  # skip header row
 job_config.autodetect = False
 job_config.write_disposition = bigquery.WriteDisposition.WRITE_APPEND
 
@@ -52,7 +52,6 @@ for blob in csvs:
         job_config=job_config
     )
     
-    # Wait for the job to complete
     load_job.result()
     
     print(f"Successfully loaded {blob.name} ({blob.size/1024:.1f}KB)")
