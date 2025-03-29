@@ -49,7 +49,7 @@ def runner(all_stores, current_week, mode):
         for _ in range(PASSES_PER_STORE):
             empty_page_count = 0  # tracks how many times there's an error or empty page; the fifth time we break
             for i in range(1, MAX_PAGES):  # no store has more than 500 pages of products
-                print(i)
+                # print(i) # testing
                 errors = 0  # tracks how many times there was an error; if it goes over 3, we break
                 while True:  # this loop is for catching errors
                     data = get_listings_data(LISTINGS_NUM, i, store_id, store_banner, mode=mode)
@@ -86,7 +86,7 @@ def runner(all_stores, current_week, mode):
         print(f"Time taken for store {store_id} is {time.time() - start} seconds")
 
 def main():
-    print('updated succesffuly')
+    print('starting...')
     
     current_week = get_week()
 
