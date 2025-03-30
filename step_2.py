@@ -9,6 +9,7 @@ BUCKET_NAME = "price-data-storage"
 DATASET_ID = "datav1"
 TABLE_ID = "prices"
 MIN_SIZE_KB = 1
+TIMEOUT = 300  
 
 def initialize_clients():
     """Initialize and return Google Cloud Storage and BigQuery clients and bucket."""
@@ -52,6 +53,9 @@ for blob in csvs:
         job_config=job_config
     )
     
-    load_job.result()
+    load_job.result(timeout=TIMEOUT)
+    if load_job.error_result:
+        print(f"Error loading {blob.name}: {load_job.error_result}")
+        continue
     
     print(f"Successfully loaded {blob.name} ({blob.size/1024:.1f}KB)")
