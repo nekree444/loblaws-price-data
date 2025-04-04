@@ -13,6 +13,10 @@ def get_product_grid(pages, mode):
     if mode == 'listings':
         if not pages:
             return None
+        
+        if type(pages) != dict:
+            print(pages)
+            return None
 
         layout = pages.get('layout')
         if not layout:
@@ -46,6 +50,10 @@ def get_product_grid(pages, mode):
             return True
     elif mode == 'search':
         if not pages:
+            return None
+        
+        if type(pages) != dict:
+            print(pages)
             return None
 
         layout = pages.get('layout')
