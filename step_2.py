@@ -1,5 +1,5 @@
 from google.cloud import storage, bigquery
-import os
+import os, re
 from loblaws_tools import get_week
 week = get_week()
 current_week = f"{week[0]}_{week[1]:02d}_{week[2]:02d}"
@@ -26,6 +26,15 @@ def initialize_clients():
 
 client, bucket, bq_client = initialize_clients()
 
+query = f"""
+    SELECT DISTINCT banner, store_id, date
+    FROM `{bq_client.project}.{DATASET_ID}.{TABLE_ID}`
+"""
+existing_combinations = {
+    (row["banner"], str(row["store_id"]), row["date"].strftime("%Y-%m-%d"))
+    for row in bq_client.query(query).result()
+}
+
 csvs = [
     blob for blob in bucket.list_blobs() 
     if blob.name.endswith('.csv') 
@@ -43,7 +52,21 @@ job_config.write_disposition = bigquery.WriteDisposition.WRITE_APPEND
 
 print(f"Found {len(csvs)} CSV files >= {MIN_SIZE_KB}KB")
 
+filename_pattern = re.compile(r"listings_\d{4}_\d{2}_\d{2}/([^/]+)/\1_(\d{4})_(\d{4}_\d{2}_\d{2})\.csv")
+
 for blob in csvs:
+    match = filename_pattern.match(blob.name)
+    if not match:
+        print(f"Skipping {blob.name}: Filename format incorrect")
+        continue
+    
+    banner, store_id, date_str = match.groups()
+    formatted_date = date_str.replace("_", "-")
+    
+    if (banner, str(int(store_id)), formatted_date) in existing_combinations:
+        print(f"Skipping {blob.name}: Data already in BigQuery")
+        continue
+
     uri = f"gs://{BUCKET_NAME}/{blob.name}"
     print(f"Loading file: {blob.name} ({blob.size/1024:.1f}KB)")
     
