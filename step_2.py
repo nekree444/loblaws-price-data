@@ -50,6 +50,7 @@ for current_week in current_weeks:
     job_config.skip_leading_rows = 1  # skip header row
     job_config.autodetect = False
     job_config.write_disposition = bigquery.WriteDisposition.WRITE_APPEND
+    job_config.allow_jagged_rows = True
 
     print(f"Found {len(csvs)} CSV files >= {MIN_SIZE_KB}KB")
 
