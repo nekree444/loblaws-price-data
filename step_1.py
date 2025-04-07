@@ -19,7 +19,7 @@ from google.cloud import storage
 
 # Constants
 LISTINGS_NUM = 275
-BUCKET_NAME = "price-data-storage"
+BUCKET_NAME = "price-data-storage1"
 MAX_RETRIES = 3
 MAX_PAGES = 500
 PASSES_PER_STORE = 5
@@ -88,6 +88,7 @@ def runner(all_stores, current_week, mode):
 def main():
     print('starting...')
     
+    # current_week = [2025,4,7]
     current_week = get_week()
 
     # all_stores = {'6720': 'wholesaleclub'} # only do one store for testing

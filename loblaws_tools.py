@@ -283,3 +283,17 @@ def process_product_data(product, holder, store_banner, store_id, current_week):
     holder.append(product['productId'])
     # print('skipped')
     return [product['productId'], product['brand'], product['title'], price, deal_price, store_id, store_banner, f"{current_week[0]}-{current_week[1]:02d}-{current_week[2]:02d}", package_size]
+
+def get_total_files(client, bucket_name):
+    """get all files in the bucket
+
+    Args:
+        client (client): client object
+        bucket_name (str): name of the bucket
+
+    Returns:
+        list: list of all files in the bucket
+    """
+    blobs = client.list_blobs(bucket_name)
+    temp = [i.name for i in blobs if 'listings' in i.name]
+    return temp
