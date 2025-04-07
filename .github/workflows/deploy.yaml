@@ -34,7 +34,7 @@ jobs:
     # Deploy to Cloud Run
     - name: Deploy to Cloud Run
       run: |
-        gcloud run jobs deploy step-1 \
+        gcloud run jobs deploy scraper-ingestion \
           --source . \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }}
