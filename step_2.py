@@ -67,7 +67,7 @@ def main():
             banner, store_id, date_str = match.groups()
             formatted_date = date_str.replace("_", "-")
             
-            if (banner, str(int(store_id)), formatted_date) in existing_combinations:
+            if (banner, str(store_id), formatted_date) in existing_combinations:
                 print(f"Skipping {blob.name}: Data already in BigQuery")
                 continue
 
