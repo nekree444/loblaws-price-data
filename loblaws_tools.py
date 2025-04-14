@@ -297,3 +297,21 @@ def get_total_files(client, bucket_name):
     blobs = client.list_blobs(bucket_name)
     temp = [i.name for i in blobs if 'listings' in i.name]
     return temp
+
+def get_product_details(product_id, store_id, store_banner):
+    headers = {
+        'x-apikey': 'C1xujSegT5j3ap3yexJjqhOfELwGKYvz',
+    }
+    params = {
+        'lang': 'en',
+        'date': '08042025',
+        'pickupType': 'STORE',
+        'storeId': store_id,
+        'banner': store_banner,
+    }
+    r = requests.get(f"https://api.pcexpress.ca/pcx-bff/api/v1/products/{product_id}",params=params,headers=headers)
+    try:
+        assert r.json()['name'] != None
+        return r.text
+    except:
+        return None
