@@ -68,7 +68,7 @@ def main():
             formatted_date = date_str.replace("_", "-")
             
             if (banner, str(store_id), formatted_date) in existing_combinations:
-                print(f"Skipping {blob.name}: Data already in BigQuery")
+                #print(f"Skipping {blob.name}: Data already in BigQuery")
                 continue
 
             uri = f"gs://{BUCKET_NAME}/{blob.name}"
