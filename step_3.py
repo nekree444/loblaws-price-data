@@ -47,7 +47,8 @@ def main():
             blob.upload_from_string(data, content_type='application/json', timeout=300)
             print('uploaded', i[0])
         else:
-            print('error')
+            #print('error')
+            continue
 
 if __name__ == "__main__":
     main()
