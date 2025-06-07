@@ -201,9 +201,31 @@ def stores_dict():
     Returns:
         dict: store_id: store_banner
     """
-    temp = requests.get('https://www.loblaws.ca/api/pickup-locations').json()
-    temp = [i for i in temp if i['address']['region'] == 'Ontario' and i['isShoppable'] == True]
-    unique_stores = {i['storeId']: i['storeBannerId'] for i in temp}
+    store_banners = [
+        "extrafoods",
+        "fortinos",
+        "independent",
+        "independentcitymarket",
+        "loblaw",
+        "nofrills",
+        "provigo",
+        "rapid",
+        "superstore",
+        "valumart",
+        "wholesaleclub",
+        "zehrs",
+    ]
+    holder = []
+    for i in store_banners:
+        headers = {
+            'x-apikey': 'C1xujSegT5j3ap3yexJjqhOfELwGKYvz',
+        }
+        params = {
+            'bannerIds': i,
+        }
+        temp = requests.get('https://api.pcexpress.ca/pcx-bff/api/v1/pickup-locations', headers=headers, params=params).json()
+        holder.extend([i for i in temp if i['address']['region'] == 'Ontario' and i['isShoppable'] == True])
+    unique_stores = {i['storeId']: i['storeBannerId'] for i in holder}
     return unique_stores # in format {store_id: store_banner}
 
 def get_week():
