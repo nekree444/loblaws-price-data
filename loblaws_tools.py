@@ -268,9 +268,12 @@ def get_products_list(data, mode):
         return data['layout']['sections']['productListingSection']['components'][0]['data']['productGrid']['productTiles']
     elif mode == 'search':
         components = data['layout']['sections']['mainContentCollection']['components']
-        if len(components) == 4:  # Two sections of products
+        # print(len(components[0]['data']['productTiles']))
+        # print(len(components[1]['data']['productTiles']))
+        # if len(components) == 4:  # Two sections of products
+        if len(components) == 2:  # One section of products since 2025-09-11
             products = components[0]['data']['productTiles']
-            products.extend(components[2]['data']['productTiles'])
+            # products.extend(components[2]['data']['productTiles'])
             return products
         else:
             return None
@@ -337,3 +340,11 @@ def get_product_details(product_id, store_id, store_banner):
         return r.text
     except:
         return None
+
+
+# if __name__ == '__main__':
+#     from rich import print
+#     import json
+#     data = get_listings_data(275,1,'1043','superstore','search')
+
+#     print(get_products_list(data, 'search'))
