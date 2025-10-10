@@ -52,7 +52,10 @@ def runner(all_stores, current_week, mode):
                 # print(i) # testing
                 errors = 0  # tracks how many times there was an error; if it goes over 3, we break
                 while True:  # this loop is for catching errors
-                    data = get_listings_data(LISTINGS_NUM, i, store_id, store_banner, mode=mode)
+                    if store_banner == 'rapid':
+                        data = get_listings_data(225, i, store_id, store_banner, mode=mode)
+                    else:
+                        data = get_listings_data(LISTINGS_NUM, i, store_id, store_banner, mode=mode)
                     if 'errors' in data:
                         print("Error occurred, retrying...")
                         time.sleep(1)
