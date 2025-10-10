@@ -270,10 +270,16 @@ def get_products_list(data, mode):
         components = data['layout']['sections']['mainContentCollection']['components']
         # print(len(components[0]['data']['productTiles']))
         # print(len(components[1]['data']['productTiles']))
-        # if len(components) == 4:  # Two sections of products
-        if len(components) == 2:  # One section of products since 2025-09-11
+        if len(components) == 4:  # Two sections of products
             products = components[0]['data']['productTiles']
-            # products.extend(components[2]['data']['productTiles'])
+            products.extend(components[2]['data']['productTiles'])
+            return products
+        elif len(components) == 3:  # Two sections of products
+            products = components[0]['data']['productTiles']
+            products.extend(components[2]['data']['productTiles'])
+            return products
+        elif len(components) == 2:  # One section of products since 2025-09-11
+            products = components[0]['data']['productTiles']
             return products
         else:
             return None
