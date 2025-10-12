@@ -18,7 +18,7 @@ from google.cloud import storage
 
 
 # Constants
-LISTINGS_NUM = 275
+LISTINGS_NUM = 250
 BUCKET_NAME = "price-data-storage1"
 MAX_RETRIES = 3
 MAX_PAGES = 500

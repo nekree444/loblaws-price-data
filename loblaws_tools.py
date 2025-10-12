@@ -271,16 +271,25 @@ def get_products_list(data, mode):
         # print(len(components[0]['data']['productTiles']))
         # print(len(components[1]['data']['productTiles']))
         if len(components) == 4:  # Two sections of products
-            products = components[0]['data']['productTiles']
-            products.extend(components[2]['data']['productTiles'])
-            return products
+            if 'productTiles' in components[0]['data'] and 'productTiles' in components[2]['data']:
+                products = components[0]['data']['productTiles']
+                products.extend(components[2]['data']['productTiles'])
+                return products
+            else:
+                return None
         elif len(components) == 3:  # Two sections of products
-            products = components[0]['data']['productTiles']
-            products.extend(components[2]['data']['productTiles'])
-            return products
+            if 'productTiles' in components[0]['data'] and 'productTiles' in components[2]['data']:
+                products = components[0]['data']['productTiles']
+                products.extend(components[2]['data']['productTiles'])
+                return products
+            else:
+                return None
         elif len(components) == 2:  # One section of products since 2025-09-11
-            products = components[0]['data']['productTiles']
-            return products
+            if 'productTiles' in components[0]['data']:
+                products = components[0]['data']['productTiles']
+                return products
+            else:
+                return None
         else:
             return None
         
@@ -351,6 +360,9 @@ def get_product_details(product_id, store_id, store_banner):
 # if __name__ == '__main__':
 #     from rich import print
 #     import json
-#     data = get_listings_data(275,1,'1043','superstore','search')
-
-#     print(get_products_list(data, 'search'))
+    # for i in range(50, 10000):
+    #     print(i)
+    #     data = get_listings_data(275,i,'7377','independent','search')     
+    #     get_products_list(data, 'search')
+    # data = get_listings_data(275,56,'7377','independent','search')     
+    # get_products_list(data, 'search')
