@@ -358,11 +358,11 @@ def get_product_details(product_id, store_id, store_banner):
 
 
 # if __name__ == '__main__':
-#     from rich import print
-#     import json
-    # for i in range(50, 10000):
-    #     print(i)
-    #     data = get_listings_data(275,i,'7377','independent','search')     
-    #     get_products_list(data, 'search')
-    # data = get_listings_data(275,56,'7377','independent','search')     
-    # get_products_list(data, 'search')
+    # from rich import print
+    # import json
+    # data = get_listings_data(200,2,'1090','loblaw','search')     
+    # products = get_products_list(data, 'search')
+    # print(len([i['title'] for i in products]))
+    # print(data)
+    # with open('pg1.json', 'w', encoding='utf8') as f:
+    #     f.write(json.dumps(data))
