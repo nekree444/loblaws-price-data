@@ -383,7 +383,7 @@ def store_to_csv_data(store_banner, store_id, current_week, mode):
         empty_page_count = 0  # tracks how many times there's an error or empty page; the fifth time we break
         
         for i in range(1, MAX_PAGES):  # no store has more than 500 pages of products
-            print(i) # testing
+            # print(i) # testing
             errors = 0  # tracks how many times there was an error; if it goes over 3, we break
             
             while True:  # this loop is for catching errors
