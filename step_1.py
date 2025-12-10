@@ -39,14 +39,14 @@ def runner(all_stores, current_week, mode):
 def main():
     print('starting...')
     
-    current_week = [2025,12,9]
-    # current_week = get_week()
+    # current_week = [2025,12,9]
+    current_week = get_week()
 
     # all_stores = {'6720': 'wholesaleclub'} # only do one store for testing
     # all_stores = {'1024': 'superstore'} # only do one store for testing
     # all_stores = {'1095': 'loblaw'} # only do one store for testing
-    all_stores = {'6748': 'independent'} # only do one store for testing
-    # all_stores = stores_dict()
+    # all_stores = {'6748': 'independent'} # only do one store for testing
+    all_stores = stores_dict()
 
     done_stores = get_all_files(current_week, key=API_KEY)
 
@@ -55,8 +55,8 @@ def main():
     print(len(done_stores), 'stores done')
     print(len(all_stores.keys()), 'stores left')
 
-    # runner(all_stores, current_week, 'listings')
-    runner(all_stores, current_week, 'search')
+    runner(all_stores, current_week, 'listings')
+    # runner(all_stores, current_week, 'search')
 
 if __name__ == "__main__":
     main()
