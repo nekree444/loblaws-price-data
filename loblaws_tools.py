@@ -1,4 +1,14 @@
-import requests, datetime
+import requests, datetime, io, csv, time, os
+# from dotenv import load_dotenv
+# load_dotenv(".env")
+
+API_UPLOAD=os.getenv("NEKREE_API_UPLOAD")
+API_FILES=os.getenv("NEKREE_API_FILES")
+
+LISTINGS_NUM = 250
+MAX_RETRIES = 3
+MAX_PAGES = 500
+PASSES_PER_STORE = 5
 
 def get_product_grid(pages, mode):
     """validates product grid of either listings or search
@@ -180,20 +190,25 @@ def get_listings_data(num_listings, page_num, store_id, store_banner, mode):
     except:
         return ['errors']
 
-def upload_to_bucket(blob_name, file_data, bucket):
+def upload_to_bucket(filename, data, key):
     """uploads file to bucket
 
     Args:
-        blob_name (str): name of the blob inc path
-        file_data (str): csv data of file to be uploaded
-        bucket (bucket): bucket object
+        filename (str): name of the blob inc path
+        data (str): csv data of file to be uploaded
+        key (bucket): auth key
     """
     try:
-        blob = bucket.blob(blob_name)
-        blob.upload_from_string(file_data.getvalue(), content_type='text/csv')
-        print(f"Uploaded {blob_name}")
+        json_data = {
+            "key": key,
+            "filename": filename,
+            "data": data,
+        }
+        result = requests.post(API_UPLOAD, json=json_data).json()
+        return result["success"]
     except:
-        print(f"Error uploading {blob_name}")
+        print(f"Error uploading {filename}")
+        return 0
 
 def stores_dict():
     """get all loblaws brand stores in Ontario that are shoppable
@@ -239,7 +254,7 @@ def get_week():
     last_thursday = today - datetime.timedelta(days=offset)
     return [last_thursday.year, last_thursday.month, last_thursday.day]
 
-def get_all_files(client, bucket_name, current_week):
+def get_all_files(current_week, key):
     """get all files in the bucket that are for the current week (used for checking if a store has already been scraped)
 
     Args:
@@ -250,9 +265,11 @@ def get_all_files(client, bucket_name, current_week):
     Returns:
         list: list of store banners that have already been scraped
     """
-    blobs = client.list_blobs(bucket_name)
-    temp = [i.name.split('/')[-1].split('_')[1] for i in blobs if f"listings_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}" in i.name]
-    return temp
+    data = requests.get(f"{API_FILES}?key={key}&date={current_week[0]}-{current_week[1]:02d}-{current_week[2]:02d}").json()
+    if len(data) == 0:
+        return []
+    else:
+        return [i.split("_")[1] for i in data]
 
 def get_products_list(data, mode):
     """get the list of products from the json data (listings or search)
@@ -324,7 +341,7 @@ def process_product_data(product, holder, store_banner, store_id, current_week):
     # print('skipped')
     return [product['productId'], product['brand'], product['title'], price, deal_price, store_id, store_banner, f"{current_week[0]}-{current_week[1]:02d}-{current_week[2]:02d}", package_size]
 
-def get_total_files(client, bucket_name):
+def get_total_files(key):
     """get all files in the bucket
 
     Args:
@@ -334,9 +351,7 @@ def get_total_files(client, bucket_name):
     Returns:
         list: list of all files in the bucket
     """
-    blobs = client.list_blobs(bucket_name)
-    temp = [i.name for i in blobs if 'listings' in i.name]
-    return temp
+    return requests.get(f"{API_FILES}?key={key}").json()
 
 def get_product_details(product_id, store_id, store_banner):
     headers = {
@@ -356,6 +371,51 @@ def get_product_details(product_id, store_id, store_banner):
     except:
         return None
 
+def store_to_csv_data(store_banner, store_id, current_week, mode):
+    csv_data = io.StringIO()
+    writer = csv.writer(csv_data)
+    writer.writerow(['id', 'brand', 'name', 'price', 'deal_price', 'store_id', 'banner', 'date', 'package_size'])
+    
+    holder = []  # for duplicate product ids
+    listings_count = 225 if store_banner == 'rapid' else LISTINGS_NUM
+    
+    for _ in range(PASSES_PER_STORE):
+        empty_page_count = 0  # tracks how many times there's an error or empty page; the fifth time we break
+        
+        for i in range(1, MAX_PAGES):  # no store has more than 500 pages of products
+            print(i) # testing
+            errors = 0  # tracks how many times there was an error; if it goes over 3, we break
+            
+            while True:  # this loop is for catching errors
+                data = get_listings_data(listings_count, i, store_id, store_banner, mode=mode)
+                
+                if 'errors' in data:
+                    print("Error occurred, retrying...")
+                    time.sleep(1)
+                    errors += 1
+                    if errors > MAX_RETRIES:
+                        print("Max retries reached!")
+                        break
+                else:
+                    break
+            
+            if not get_product_grid(data, mode=mode):
+                empty_page_count += 1
+                if empty_page_count > 5:
+                    break
+                continue
+            
+            # Check if there are multiple product sections
+            products = get_products_list(data, mode=mode)
+            if products == None:
+                break
+            
+            for product in products:
+                row = process_product_data(product, holder, store_banner, store_id, current_week)
+                if row:
+                    # print(row[2]) # testing
+                    writer.writerow(row)
+    return csv_data.getvalue()
 
 # if __name__ == '__main__':
     # from rich import print

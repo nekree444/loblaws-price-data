@@ -5,10 +5,6 @@ on:
     branches:
       - main
 
-# env:
-#   BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
-#   GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-
 jobs:
   deploy:
     name: Deploying loblaws price data
@@ -36,4 +32,5 @@ jobs:
         gcloud run jobs deploy scraper-ingestion \
           --source . \
           --region northamerica-northeast2 \
-          --project ${{ secrets.GCP_PROJECT_ID }}
+          --project ${{ secrets.GCP_PROJECT_ID }} \
+          --set-env-vars NEKREE_API_KEY=${{ secrets.NEKREE_API_KEY }},NEKREE_API_UPLOAD=${{ secrets.NEKREE_API_UPLOAD }},NEKREE_API_FILES=${{ secrets.NEKREE_API_FILES }}
