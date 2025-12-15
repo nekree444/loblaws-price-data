@@ -1,6 +1,7 @@
 import requests, datetime, io, csv, time, os
 # from dotenv import load_dotenv
 # load_dotenv(".env")
+# API_KEY = os.getenv("NEKREE_API_KEY")
 
 API_UPLOAD=os.getenv("NEKREE_API_UPLOAD")
 API_FILES=os.getenv("NEKREE_API_FILES")
@@ -265,7 +266,7 @@ def get_all_files(current_week, key):
     Returns:
         list: list of store banners that have already been scraped
     """
-    data = requests.get(f"{API_FILES}?key={key}&date={current_week[0]}-{current_week[1]:02d}-{current_week[2]:02d}").json()
+    data = requests.get(f"{API_FILES}?key={key}&date={current_week[0]}-{current_week[1]:02d}-{current_week[2]:02d}&mode=prices").json()
     if len(data) == 0:
         return []
     else:
@@ -359,7 +360,7 @@ def get_product_details(product_id, store_id, store_banner):
     }
     params = {
         'lang': 'en',
-        'date': '08042025',
+        'date': '01012025',
         'pickupType': 'STORE',
         'storeId': store_id,
         'banner': store_banner,

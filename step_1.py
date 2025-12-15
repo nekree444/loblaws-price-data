@@ -23,7 +23,7 @@ def runner(all_stores, current_week, mode):
 
         csv_data = store_to_csv_data(store_banner, store_id, current_week, mode=mode)
 
-        blob_name = f"listings_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}.csv"
+        blob_name = f"price-data-storage/listings_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}/{store_banner}/{store_banner}_{store_id}_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}.csv"
         result = upload_to_bucket(blob_name, csv_data, key=API_KEY)
         if result == 1:
             print(f"Uploaded {blob_name}")
