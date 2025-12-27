@@ -230,6 +230,10 @@ def stores_dict():
         "valumart",
         "wholesaleclub",
         "zehrs",
+        "maxi",
+        "valumart",
+        "dominion",
+        "rass"
     ]
     holder = []
     for i in store_banners:
@@ -240,7 +244,8 @@ def stores_dict():
             'bannerIds': i,
         }
         temp = requests.get('https://api.pcexpress.ca/pcx-bff/api/v1/pickup-locations', headers=headers, params=params).json()
-        holder.extend([i for i in temp if i['address']['region'] == 'Ontario' and i['isShoppable'] == True])
+        # holder.extend([i for i in temp if i['address']['region'] == 'Ontario' and i['isShoppable'] == True])
+        holder.extend([i for i in temp if i['isShoppable'] == True])
     unique_stores = {i['storeId']: i['storeBannerId'] for i in holder}
     return unique_stores # in format {store_id: store_banner}
 
