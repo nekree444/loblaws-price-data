@@ -1,1 +1,1 @@
-web: python3 step_1.py
+web: python3 loblaws.py && python3 empire.py

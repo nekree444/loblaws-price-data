@@ -1,7 +1,6 @@
 import requests, datetime, io, csv, time, os
 # from dotenv import load_dotenv
 # load_dotenv(".env")
-# API_KEY = os.getenv("NEKREE_API_KEY")
 
 API_UPLOAD=os.getenv("NEKREE_API_UPLOAD")
 API_FILES=os.getenv("NEKREE_API_FILES")
@@ -256,7 +255,7 @@ def get_week():
         list: [year, month, day] of the current week ints
     """
     today = datetime.datetime.today()
-    offset = (today.weekday() - 3) % 7  # 3 corresponds to Thursday
+    offset = (today.weekday() - 3) % 7
     last_thursday = today - datetime.timedelta(days=offset)
     return [last_thursday.year, last_thursday.month, last_thursday.day]
 
