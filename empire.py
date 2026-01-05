@@ -62,7 +62,7 @@ def main():
 
         df = pd.DataFrame(rows, columns=header)
         print("donedf", store_id)
-        df = df.to_string(index=False)
+        df = df.to_csv(index=False)
         blob_name = f"price-data-storage-empire/listings_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}/{banner}/{banner}_{store_id}_{current_week[0]}_{current_week[1]:02d}_{current_week[2]:02d}.csv"
         result = upload_to_bucket(blob_name, df, key=API_KEY)
         if result == 1:
