@@ -1,1 +1,0 @@
-web: python3 loblaws.py && python3 empire.py

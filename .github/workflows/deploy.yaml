@@ -6,31 +6,40 @@ on:
       - main
 
 jobs:
-  deploy:
-    name: Deploying loblaws price data
+  deploy-empire:
+    name: Deploy Empire
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # Authenticate gcloud CLI
-    - name: Authenticate gcloud CLI
-      uses: google-github-actions/auth@v2
+    - uses: actions/checkout@v3
+    - uses: google-github-actions/auth@v2
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-    # Set up Google Cloud SDK
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
+    - uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
-
-    # Deploy to Cloud Run
-    - name: Deploy to Cloud Run
-      run: |
-        gcloud run jobs deploy scraper-ingestion \
+    - run: |
+        gcloud run jobs deploy empire-scraper \
           --source . \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
+          --command "python3" --args "empire.py" \
+          --set-env-vars NEKREE_API_KEY=${{ secrets.NEKREE_API_KEY }},NEKREE_API_UPLOAD=${{ secrets.NEKREE_API_UPLOAD }},NEKREE_API_FILES=${{ secrets.NEKREE_API_FILES }}
+
+  deploy-loblaws:
+    name: Deploy Loblaws
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+    - uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+    - run: |
+        gcloud run jobs deploy loblaws-scraper \
+          --source . \
+          --region northamerica-northeast2 \
+          --project ${{ secrets.GCP_PROJECT_ID }} \
+          --command "python3" --args "loblaws.py" \
           --set-env-vars NEKREE_API_KEY=${{ secrets.NEKREE_API_KEY }},NEKREE_API_UPLOAD=${{ secrets.NEKREE_API_UPLOAD }},NEKREE_API_FILES=${{ secrets.NEKREE_API_FILES }}
