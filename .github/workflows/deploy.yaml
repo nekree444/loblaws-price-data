@@ -9,8 +9,6 @@ jobs:
   build_image:
     name: Build shared image
     runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.build.outputs.image }}
 
     steps:
     - name: Checkout code
@@ -27,7 +25,6 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Build image once with Docker
-      id: build
       run: |
         set -euo pipefail
         IMAGE="gcr.io/${{ secrets.GCP_PROJECT_ID }}/grocery-scrapers:${{ github.sha }}"
@@ -51,7 +48,7 @@ jobs:
           sleep 10
         done
 
-        echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+  echo "Built image: $IMAGE"
 
   deploy-loblaws:
     name: Loblaws - ${{ matrix.banner }}
@@ -97,8 +94,9 @@ jobs:
     # Deploy to Cloud Run
     - name: Deploy Loblaws Cloud Run Job
       run: |
+        IMAGE="gcr.io/${{ secrets.GCP_PROJECT_ID }}/grocery-scrapers:${{ github.sha }}"
         gcloud run jobs deploy scraper-loblaws-${{ matrix.banner }} \
-          --image ${{ needs.build_image.outputs.image }} \
+          --image "$IMAGE" \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --command python3 \
@@ -133,8 +131,9 @@ jobs:
 
     - name: Deploy Empire Cloud Run Job
       run: |
+        IMAGE="gcr.io/${{ secrets.GCP_PROJECT_ID }}/grocery-scrapers:${{ github.sha }}"
         gcloud run jobs deploy scraper-empire \
-          --image ${{ needs.build_image.outputs.image }} \
+          --image "$IMAGE" \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --command python3 \
