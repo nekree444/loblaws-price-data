@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '0 9 * * 4'
 
 jobs:
   build_image:
@@ -98,6 +100,7 @@ jobs:
           --image "$IMAGE" \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
+          --task-timeout 180000s \
           --command python3 \
           --args loblaws.py \
           --set-env-vars NEKREE_API_KEY=${{ secrets.NEKREE_API_KEY }},NEKREE_API_UPLOAD=${{ secrets.NEKREE_API_UPLOAD }},NEKREE_API_FILES=${{ secrets.NEKREE_API_FILES }},LOBLAWS_BANNER=${{ matrix.banner }}
@@ -135,6 +138,7 @@ jobs:
           --image "$IMAGE" \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
+          --task-timeout 180000s \
           --command python3 \
           --args empire.py \
           --set-env-vars NEKREE_API_KEY=${{ secrets.NEKREE_API_KEY }},NEKREE_API_UPLOAD=${{ secrets.NEKREE_API_UPLOAD }},NEKREE_API_FILES=${{ secrets.NEKREE_API_FILES }}
