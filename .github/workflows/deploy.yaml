@@ -6,8 +6,36 @@ on:
       - main
 
 jobs:
+  build-image:
+    name: Build shared image
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Authenticate gcloud CLI
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Build image once with Buildpacks
+      id: build
+      run: |
+        IMAGE="gcr.io/${{ secrets.GCP_PROJECT_ID }}/grocery-scrapers:${{ github.sha }}"
+        gcloud builds submit --pack image="$IMAGE" .
+        echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
   deploy-loblaws:
     name: Loblaws - ${{ matrix.banner }}
+    needs: build-image
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -50,7 +78,7 @@ jobs:
     - name: Deploy Loblaws Cloud Run Job
       run: |
         gcloud run jobs deploy scraper-loblaws-${{ matrix.banner }} \
-          --source . \
+          --image ${{ needs.build-image.outputs.image }} \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --command python3 \
@@ -66,6 +94,7 @@ jobs:
 
   deploy-empire:
     name: Empire
+    needs: build-image
     runs-on: ubuntu-latest
 
     steps:
@@ -85,7 +114,7 @@ jobs:
     - name: Deploy Empire Cloud Run Job
       run: |
         gcloud run jobs deploy scraper-empire \
-          --source . \
+          --image ${{ needs.build-image.outputs.image }} \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --command python3 \
