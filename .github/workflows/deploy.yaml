@@ -100,6 +100,7 @@ jobs:
           --image "$IMAGE" \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
+          --max-retries 10 \
           --task-timeout 180000s \
           --command python3 \
           --args loblaws.py \
@@ -138,6 +139,7 @@ jobs:
           --image "$IMAGE" \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
+          --max-retries 10 \
           --task-timeout 180000s \
           --command python3 \
           --args empire.py \

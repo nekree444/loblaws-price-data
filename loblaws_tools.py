@@ -246,7 +246,11 @@ def stores_dict(store_banners=None):
         }
         temp = requests.get('https://api.pcexpress.ca/pcx-bff/api/v1/pickup-locations', headers=headers, params=params).json()
         # holder.extend([i for i in temp if i['address']['region'] == 'Ontario' and i['isShoppable'] == True])
-        holder.extend([i for i in temp if i['isShoppable'] == True])
+        try:
+            holder.extend([i for i in temp if i['isShoppable'] == True])
+        except:
+            print(temp)
+            raise IndentationError
     unique_stores = {i['storeId']: i['storeBannerId'] for i in holder}
     return unique_stores # in format {store_id: store_banner}
 
