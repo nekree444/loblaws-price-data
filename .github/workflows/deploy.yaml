@@ -47,8 +47,7 @@ jobs:
 
           sleep 10
         done
-
-  echo "Built image: $IMAGE"
+        echo "Built image: $IMAGE"
 
   deploy-loblaws:
     name: Loblaws - ${{ matrix.banner }}
