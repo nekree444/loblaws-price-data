@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-image:
+  build_image:
     name: Build shared image
     runs-on: ubuntu-latest
     outputs:
@@ -55,7 +55,7 @@ jobs:
 
   deploy-loblaws:
     name: Loblaws - ${{ matrix.banner }}
-    needs: build-image
+    needs: build_image
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -98,7 +98,7 @@ jobs:
     - name: Deploy Loblaws Cloud Run Job
       run: |
         gcloud run jobs deploy scraper-loblaws-${{ matrix.banner }} \
-          --image ${{ needs.build-image.outputs.image }} \
+          --image ${{ needs.build_image.outputs.image }} \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --command python3 \
@@ -114,7 +114,7 @@ jobs:
 
   deploy-empire:
     name: Empire
-    needs: build-image
+    needs: build_image
     runs-on: ubuntu-latest
 
     steps:
@@ -134,7 +134,7 @@ jobs:
     - name: Deploy Empire Cloud Run Job
       run: |
         gcloud run jobs deploy scraper-empire \
-          --image ${{ needs.build-image.outputs.image }} \
+          --image ${{ needs.build_image.outputs.image }} \
           --region northamerica-northeast2 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --command python3 \
