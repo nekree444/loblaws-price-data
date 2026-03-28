@@ -31,7 +31,26 @@ jobs:
       run: |
         set -euo pipefail
         IMAGE="gcr.io/${{ secrets.GCP_PROJECT_ID }}/grocery-scrapers:${{ github.sha }}"
-        gcloud builds submit --tag "$IMAGE" .
+        BUILD_ID=$(gcloud builds submit --tag "$IMAGE" . --async --format='value(id)')
+        echo "Submitted build: $BUILD_ID"
+
+        while true; do
+          STATUS=$(gcloud builds describe "$BUILD_ID" --format='value(status)')
+          echo "Build status: $STATUS"
+
+          if [ "$STATUS" = "SUCCESS" ]; then
+            break
+          fi
+
+          if [ "$STATUS" = "FAILURE" ] || [ "$STATUS" = "INTERNAL_ERROR" ] || [ "$STATUS" = "TIMEOUT" ] || [ "$STATUS" = "CANCELLED" ] || [ "$STATUS" = "EXPIRED" ]; then
+            echo "Cloud Build failed with status: $STATUS"
+            gcloud builds describe "$BUILD_ID"
+            exit 1
+          fi
+
+          sleep 10
+        done
+
         echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
 
   deploy-loblaws:
