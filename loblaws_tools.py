@@ -10,6 +10,24 @@ MAX_RETRIES = 3
 MAX_PAGES = 500
 PASSES_PER_STORE = 5
 
+STORE_BANNERS = [
+    "extrafoods",
+    "fortinos",
+    "independent",
+    "independentcitymarket",
+    "loblaw",
+    "nofrills",
+    "provigo",
+    "rapid",
+    "superstore",
+    "valumart",
+    "wholesaleclub",
+    "zehrs",
+    "maxi",
+    "dominion",
+    "rass",
+]
+
 def get_product_grid(pages, mode):
     """validates product grid of either listings or search
 
@@ -210,30 +228,14 @@ def upload_to_bucket(filename, data, key):
         print(f"Error uploading {filename}")
         return 0
 
-def stores_dict():
+def stores_dict(store_banners=None):
     """get all loblaws brand stores in Ontario that are shoppable
 
     Returns:
         dict: store_id: store_banner
     """
-    store_banners = [
-        "extrafoods",
-        "fortinos",
-        "independent",
-        "independentcitymarket",
-        "loblaw",
-        "nofrills",
-        "provigo",
-        "rapid",
-        "superstore",
-        "valumart",
-        "wholesaleclub",
-        "zehrs",
-        "maxi",
-        "valumart",
-        "dominion",
-        "rass"
-    ]
+    if store_banners is None:
+        store_banners = STORE_BANNERS
     holder = []
     for i in store_banners:
         headers = {

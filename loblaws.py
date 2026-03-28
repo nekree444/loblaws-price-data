@@ -1,10 +1,11 @@
 """ 
 Go through every single store and get every single item
 Go through each store 5 times in order to get every item inc some that might not show up on the first go around
-We will do all stores in Ontario
+We will do all stores in Ontariono Canada
 """
 from loblaws_tools import (
     stores_dict,
+    STORE_BANNERS,
     get_week,
     upload_to_bucket,
     get_all_files,
@@ -15,6 +16,7 @@ import time, os
 # load_dotenv('.env')
 
 API_KEY = os.getenv("NEKREE_API_KEY")
+TARGET_BANNER = os.getenv("LOBLAWS_BANNER")
 
 def runner(all_stores, current_week, mode):
     for store_id, store_banner in all_stores.items():
@@ -46,7 +48,16 @@ def main():
     # all_stores = {'1024': 'superstore'} # only do one store for testing
     # all_stores = {'1095': 'loblaw'} # only do one store for testing
     # all_stores = {'6748': 'independent'} # only do one store for testing
-    all_stores = stores_dict()
+    target_banners = None
+    if TARGET_BANNER:
+        target_banners = [TARGET_BANNER.strip().lower()]
+        if target_banners[0] not in STORE_BANNERS:
+            raise ValueError(
+                f"Invalid LOBLAWS_BANNER '{TARGET_BANNER}'. Expected one of: {', '.join(STORE_BANNERS)}"
+            )
+        print(f"Running only banner: {target_banners[0]}")
+
+    all_stores = stores_dict(store_banners=target_banners)
 
     done_stores = get_all_files(current_week, key=API_KEY)
 
