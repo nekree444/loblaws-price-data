@@ -370,7 +370,7 @@ def get_product_details(product_id, store_id, store_banner):
     }
     params = {
         'lang': 'en',
-        'date': '01012025',
+        'date': '29122026',
         'pickupType': 'STORE',
         'storeId': store_id,
         'banner': store_banner,
@@ -429,6 +429,7 @@ def store_to_csv_data(store_banner, store_id, current_week, mode):
     return csv_data.getvalue()
 
 # if __name__ == '__main__':
+    # print(get_product_details('21199142_EA', "0906", "dominion"))
     # from rich import print
     # import json
     # data = get_listings_data(200,2,'1090','loblaw','search')     
