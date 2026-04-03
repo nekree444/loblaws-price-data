@@ -1,45 +1,13 @@
 name: Deploy to Cloud Run
 
 on:
+  push:
   schedule:
-    # hourly but below logic makes it 42 hours
-    - cron: '0 * * * *'
+    - cron: '0 10 * * 0,4'
 
 jobs:
-  schedule_gate:
-    name: Schedule gate
-    runs-on: ubuntu-latest
-    outputs:
-      should_run: ${{ steps.gate.outputs.should_run }}
-    steps:
-    - name: Decide whether this run should execute
-      id: gate
-      run: |
-        set -euo pipefail
-
-        if [ "${{ github.event_name }}" != "schedule" ]; then
-          echo "should_run=true" >> "$GITHUB_OUTPUT"
-          echo "Non-schedule event (${{ github.event_name }}) => run"
-          exit 0
-        fi
-
-        # Anchor: Thu 2026-03-26 09:00:00 UTC (5:00 AM Eastern during DST)
-        anchor_hour=$(( $(date -u -d '2026-03-26 09:00:00' +%s) / 3600 ))
-        now_hour=$(( $(date -u +%s) / 3600 ))
-        delta_hours=$(( now_hour - anchor_hour ))
-
-        if (( delta_hours >= 0 )) && (( delta_hours % 42 == 0 )); then
-          echo "should_run=true" >> "$GITHUB_OUTPUT"
-          echo "Schedule gate passed at delta_hours=$delta_hours"
-        else
-          echo "should_run=false" >> "$GITHUB_OUTPUT"
-          echo "Schedule gate skipped at delta_hours=$delta_hours"
-        fi
-
   build_image:
     name: Build shared image
-    needs: schedule_gate
-    if: needs.schedule_gate.outputs.should_run == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -83,8 +51,7 @@ jobs:
 
   deploy-loblaws:
     name: Loblaws - ${{ matrix.banner }}
-    needs: [schedule_gate, build_image]
-    if: needs.schedule_gate.outputs.should_run == 'true'
+    needs: build_image
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -146,8 +113,7 @@ jobs:
 
   deploy-empire:
     name: Empire
-    needs: [schedule_gate, build_image]
-    if: needs.schedule_gate.outputs.should_run == 'true'
+    needs: build_image
     runs-on: ubuntu-latest
 
     steps:
